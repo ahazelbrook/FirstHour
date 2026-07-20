@@ -24,7 +24,7 @@ in `dist/` (see PWA section below).
 ## Tests
 
 ```
-npx vitest run
+npm test
 ```
 
 Covers routine timing integrity (`src/data/routines.test.ts` — segments are contiguous,
