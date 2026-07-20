@@ -1,6 +1,30 @@
 import type { ComponentType } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { FigureSvg, MorphHead, MorphPath } from './rig';
+import {
+  SlGluteBridgeFigure,
+  DeadBugFigure,
+  CatCamelFigure,
+  BirdDogFigure,
+  SidePlankFigure,
+  WgsFigure,
+  AnkleRocksFigure,
+  AdductorRocksFigure,
+  HipAbductionFigure,
+} from './ground';
+import {
+  LegSwingsFigure,
+  WallSlidesFigure,
+  ScapWorkFigure,
+  CalfRaisesFigure,
+  MarchKneesFigure,
+  BwSquatsFigure,
+  SquatsLungesFigure,
+  LateralLungesFigure,
+  PlyoIntervalsFigure,
+  FinisherFigure,
+  ResetBreathingFigure,
+} from './standing';
 
 /**
  * Looping demonstration figure for an exercise id. Add figures to the
@@ -73,11 +97,26 @@ function DefaultFigure({ label }: { label: string }) {
 const registry: Record<string, ComponentType> = {
   'breathing-sways': BreathingSwaysFigure,
   'glute-bridge': GluteBridgeFigure,
-  // Remaining figures follow the same MorphPath/MorphHead pattern:
-  // sl-glute-bridge, dead-bug, cat-camel, bird-dog, side-plank, wgs,
-  // ankle-rocks, adductor-rocks, leg-swings, wall-slides, scap-work,
-  // hip-abduction, calf-raises, march-knees, bw-squats, squats-lunges,
-  // lateral-lunges, plyo-intervals, finisher, reset-breathing
+  'sl-glute-bridge': SlGluteBridgeFigure,
+  'dead-bug': DeadBugFigure,
+  'cat-camel': CatCamelFigure,
+  'bird-dog': BirdDogFigure,
+  'side-plank': SidePlankFigure,
+  wgs: WgsFigure,
+  'ankle-rocks': AnkleRocksFigure,
+  'adductor-rocks': AdductorRocksFigure,
+  'leg-swings': LegSwingsFigure,
+  'wall-slides': WallSlidesFigure,
+  'scap-work': ScapWorkFigure,
+  'hip-abduction': HipAbductionFigure,
+  'calf-raises': CalfRaisesFigure,
+  'march-knees': MarchKneesFigure,
+  'bw-squats': BwSquatsFigure,
+  'squats-lunges': SquatsLungesFigure,
+  'lateral-lunges': LateralLungesFigure,
+  'plyo-intervals': PlyoIntervalsFigure,
+  finisher: FinisherFigure,
+  'reset-breathing': ResetBreathingFigure,
 };
 
 export function ExerciseFigure({ name, label }: { name: string; label?: string }) {

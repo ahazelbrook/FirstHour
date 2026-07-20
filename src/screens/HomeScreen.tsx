@@ -18,8 +18,17 @@ export function HomeScreen({ onStart, onInfo }: Props) {
   const doneToday = hasCompletedToday();
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top))]">
-      <header>
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-xl flex-col px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top))]">
+      {/* quiet pre-dawn glow rising from the top edge */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-64"
+        style={{
+          background: 'radial-gradient(120% 80% at 50% -10%, var(--accent-glow), transparent 70%)',
+          opacity: 0.6,
+        }}
+      />
+      <header className="relative">
         <p className="quiet-label">{todayLine()}</p>
         <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-cream">First Hour</h1>
         <p className="mt-2 font-body text-sm text-mist">
@@ -36,24 +45,27 @@ export function HomeScreen({ onStart, onInfo }: Props) {
         </p>
       </header>
 
-      <main className="mt-10 flex flex-1 flex-col justify-start gap-4">
+      <main className="relative mt-12 flex flex-1 flex-col justify-start gap-4">
         {routines.map((routine, i) => (
           <motion.button
             key={routine.id}
             type="button"
             onClick={() => onStart(routine)}
             whileTap={reducedMotion ? undefined : { scale: 0.98 }}
-            className="rounded-2xl border border-night-2 bg-night-1 p-6 text-left"
-            style={{ boxShadow: i === 0 ? '0 0 32px -14px var(--accent-glow)' : undefined }}
+            className="accent-fade rounded-2xl border bg-night-1 p-6 text-left transition-colors"
+            style={{
+              borderColor: i === 0 ? 'var(--accent-glow)' : 'var(--color-night-2)',
+              boxShadow: i === 0 ? '0 0 40px -16px var(--accent-glow)' : undefined,
+            }}
           >
-            <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline justify-between gap-4">
               <span className="font-body text-xl font-semibold text-cream">{routine.title}</span>
-              <span className="timer-numerals accent-fade text-2xl" style={{ color: 'var(--accent)' }}>
+              <span className="timer-numerals accent-fade shrink-0 text-2xl" style={{ color: 'var(--accent)' }}>
                 {routine.totalSec / 60}
                 <span className="text-sm text-mist"> min</span>
               </span>
             </div>
-            <p className="mt-1.5 font-body text-sm leading-snug text-mist">{routine.subtitle}</p>
+            <p className="mt-2 font-body text-sm leading-relaxed text-mist">{routine.subtitle}</p>
           </motion.button>
         ))}
       </main>

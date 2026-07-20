@@ -80,9 +80,9 @@ export function SessionScreen({ routine, coach, onComplete, onExit }: Props) {
         remainingSec={s.sessionRemaining}
       />
 
-      <div className="flex flex-1 flex-col items-center justify-evenly gap-2 lg:flex-row lg:justify-center lg:gap-16">
+      <div className="flex flex-1 flex-col items-center justify-evenly gap-2 min-[820px]:flex-row min-[820px]:justify-center min-[820px]:gap-8 lg:gap-14">
         {/* Timer column */}
-        <div className="flex w-full flex-col items-center gap-3 lg:w-auto lg:max-w-[480px]">
+        <div className="flex w-full flex-col items-center gap-3 min-[820px]:w-auto min-[820px]:max-w-[420px]">
           <div className="text-center">
             <p className="quiet-label accent-fade" style={{ color: 'var(--accent)' }}>
               Block {s.blockIndex + 1} · {s.blockName}
@@ -105,8 +105,8 @@ export function SessionScreen({ routine, coach, onComplete, onExit }: Props) {
         </div>
 
         {/* Figure + up-next column */}
-        <div className="flex w-full max-w-[360px] flex-col items-center gap-4 lg:w-[360px]">
-          <div className="h-[120px] w-full sm:h-[150px] lg:h-[220px]">
+        <div className="flex w-full max-w-[360px] flex-col items-center gap-4 min-[820px]:w-[300px] lg:w-[360px]">
+          <div className="h-[120px] w-full sm:h-[150px] min-[820px]:h-[190px] lg:h-[220px]">
             <ExerciseFigure name={s.segment.id} label={s.segment.name} />
           </div>
           <p className="quiet-label">

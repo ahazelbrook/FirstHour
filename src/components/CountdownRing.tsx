@@ -31,7 +31,7 @@ export function CountdownRing({ progress, remaining, segmentKey, paused, onTap }
       type="button"
       onClick={onTap}
       aria-label={paused ? 'Resume session' : 'Pause session'}
-      className="relative block aspect-square w-full max-w-[min(78vw,420px)] cursor-pointer border-none bg-transparent p-0"
+      className="relative block aspect-square w-full max-w-[min(78vw,62vh,420px)] cursor-pointer border-none bg-transparent p-0"
       key={reducedMotion ? undefined : segmentKey}
       initial={reducedMotion ? false : { scale: 0.965 }}
       animate={{ scale: 1 }}
