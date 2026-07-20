@@ -1,0 +1,111 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/sono';
+@import 'tailwindcss';
+
+@theme {
+  /* Pre-dawn base — warm indigo-charcoal, never pure black */
+  --color-night-0: #0f0e16;
+  --color-night-1: #161420;
+  --color-night-2: #1e1b2a;
+  --color-cream: #ede6da;
+  --color-mist: #9c94ac;
+
+  /* The sunrise ramp — one live at a time via --accent */
+  --color-ember: #f4703b;
+  --color-amber: #f79a4b;
+  --color-gold: #fbbe5a;
+  --color-daylight: #ffd97e;
+
+  --font-display: 'Sono Variable', ui-monospace, 'SF Mono', monospace;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+}
+
+/* Registered so the block-accent crossfade animates smoothly */
+@property --accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f4703b;
+}
+
+:root {
+  /* Block accent, crossfaded at block boundaries by SessionScreen */
+  --accent: var(--color-ember);
+  --accent-glow: color-mix(in srgb, var(--accent) 22%, transparent);
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  background: var(--color-night-0);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Timer numerals — tabular by nature (mono), but belt-and-braces */
+.timer-numerals {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Scope whose --accent crossfades over block boundaries */
+.accent-scope {
+  transition: --accent 1200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accent-scope {
+    transition: none;
+  }
+}
+
+/* Elements that consume the block accent crossfade with it */
+.accent-fade {
+  transition:
+    color 1200ms ease,
+    background-color 1200ms ease,
+    stroke 1200ms ease,
+    fill 1200ms ease,
+    box-shadow 1200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accent-fade {
+    transition: none;
+  }
+}
+
+/* Quiet all-caps label style used for block names / "up next" */
+.quiet-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-mist);
+  font-weight: 500;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
