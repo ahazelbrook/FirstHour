@@ -31,7 +31,7 @@ export function CountdownRing({ progress, remaining, segmentKey, paused, onTap }
       type="button"
       onClick={onTap}
       aria-label={paused ? 'Resume session' : 'Pause session'}
-      className="relative block aspect-square w-full max-w-[min(78vw,62vh,420px)] cursor-pointer border-none bg-transparent p-0"
+      className="relative block aspect-square w-full max-w-[min(78vw,64vh,440px)] cursor-pointer border-none bg-transparent p-0"
       key={reducedMotion ? undefined : segmentKey}
       initial={reducedMotion ? false : { scale: 0.965 }}
       animate={{ scale: 1 }}
@@ -67,7 +67,7 @@ export function CountdownRing({ progress, remaining, segmentKey, paused, onTap }
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="timer-numerals accent-fade text-[clamp(64px,19vw,140px)]"
+          className="timer-numerals accent-fade text-[clamp(64px,17vmin,150px)]"
           style={{ color: paused ? 'var(--color-mist)' : 'var(--color-cream)' }}
         >
           {formatRemaining(remaining)}

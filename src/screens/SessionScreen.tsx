@@ -72,29 +72,22 @@ export function SessionScreen({ routine, coach, voiceOff = false, onComplete, on
   useMeshPalette(meshForBlock(s.blockIndex), paused ? 'paused' : 'session');
 
   return (
-    <div className="accent-scope flex min-h-dvh flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
+    <div className="accent-scope mx-auto flex min-h-dvh w-full max-w-[600px] flex-col px-[18px] pb-[max(1.125rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
       <SunriseSweep />
 
       <SessionProgress
         routine={routine}
         progress={s.sessionProgress}
         elapsedSec={s.elapsed}
-        remainingSec={s.sessionRemaining}
+        blockIndex={s.blockIndex}
+        blockName={s.blockName}
+        segmentIndex={s.segmentIndex}
+        totalSegments={s.totalSegments}
       />
 
-      <div className="flex flex-1 flex-col items-center justify-evenly gap-2 min-[820px]:flex-row min-[820px]:justify-center min-[820px]:gap-8 lg:gap-14">
-        {/* Timer column */}
-        <div className="flex w-full flex-col items-center gap-3 min-[820px]:w-auto min-[820px]:max-w-[420px]">
-          <div className="text-center">
-            <p className="quiet-label accent-fade" style={{ color: 'var(--accent)' }}>
-              Block {s.blockIndex + 1} · {s.blockName}
-            </p>
-            <h1 className="mt-1 font-body text-2xl font-semibold tracking-tight text-cream">
-              {s.segment.name}
-              <span className="ml-2 align-middle text-sm font-normal text-mist">{s.segment.prescription}</span>
-            </h1>
-          </div>
-
+      {/* One centred column: timer, then the exercise, then what's next. */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-3">
+        <div className="flex flex-col items-center">
           <CountdownRing
             progress={s.segmentProgress}
             remaining={s.segmentRemaining}
@@ -103,16 +96,23 @@ export function SessionScreen({ routine, coach, voiceOff = false, onComplete, on
             onTap={s.togglePause}
           />
 
-          <p className="max-w-[36ch] text-center font-body text-lg leading-snug text-cream/85">{s.segment.cue}</p>
+          <div className="mt-5 max-w-[24ch] text-center">
+            <h1 className="font-body text-[clamp(22px,6vw,30px)] font-semibold leading-tight tracking-tight text-cream">
+              {s.segment.name}
+            </h1>
+            <p className="mt-2.5 font-body text-[clamp(15px,4vw,18px)] leading-snug text-mist">{s.segment.cue}</p>
+          </div>
         </div>
 
-        {/* Figure + up-next column */}
-        <div className="flex w-full max-w-[360px] flex-col items-center gap-4 min-[820px]:w-[300px] lg:w-[360px]">
-          <div className="h-[120px] w-full sm:h-[150px] min-[820px]:h-[190px] lg:h-[220px]">
+        <div className="flex w-[min(52vw,220px)] flex-col items-center gap-2">
+          <div className="aspect-square max-h-[22vh] w-full">
             <ExerciseFigure name={s.segment.id} label={s.segment.name} />
           </div>
-          <p className="quiet-label">
-            {s.nextSegment ? `Up next — ${s.nextSegment.name}` : 'Final segment'}
+          <p className="flex items-center gap-2.5 opacity-85">
+            <span className="quiet-label">Next</span>
+            <span className="font-body text-[15px] text-cream/80">
+              {s.nextSegment ? s.nextSegment.name : 'Finish'}
+            </span>
           </p>
         </div>
       </div>

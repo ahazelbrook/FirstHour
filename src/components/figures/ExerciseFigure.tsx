@@ -1,154 +1,127 @@
-import type { ComponentType } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { FigureSvg, MorphHead, MorphPath } from './rig';
-import {
-  SlGluteBridgeFigure,
-  DeadBugFigure,
-  CatCamelFigure,
-  BirdDogFigure,
-  SidePlankFigure,
-  WgsFigure,
-  AnkleRocksFigure,
-  AdductorRocksFigure,
-  HipAbductionFigure,
-} from './ground';
-import {
-  LegSwingsFigure,
-  WallSlidesFigure,
-  ScapWorkFigure,
-  CalfRaisesFigure,
-  MarchKneesFigure,
-  BwSquatsFigure,
-  SquatsLungesFigure,
-  LateralLungesFigure,
-  PlyoIntervalsFigure,
-  FinisherFigure,
-  ResetBreathingFigure,
-} from './standing';
-import {
-  HipCarsFigure,
-  NinetyNinetyFigure,
-  FigureFourFigure,
-  ButterflyFigure,
-  HipFlexorFigure,
-  NerveGlidesFigure,
-  HamstringStrapFigure,
-  WallHamstringFigure,
-  CalfStretchFigure,
-  ToeTouchFigure,
-} from './stretch';
+import { useReducedMotion } from 'framer-motion';
+import { forwardKinematics, poseFor, type Frame, type Point } from './poses';
 
 /**
- * Looping demonstration figure for an exercise id. Add figures to the
- * registry below — one per exercise id in src/data/routines.ts.
+ * Volumetric-glow exercise figure.
+ *
+ * One kinematic engine draws every exercise: a blurred underlay for volume, a
+ * solid gradient core on top, and a glowing head — lit from within, in the
+ * app's fixed warm-pink figure gradient. The figure loops between two keyframe
+ * poses (`a` → `b` → `a`); under reduced motion it holds pose `a`.
  */
 
-/* ── Reference implementations (the pattern for all figures) ─────────── */
+// The figure gradient is fixed (independent of the block accent) so the body
+// reads as one warm, self-lit form across the whole sunrise.
+const FIG_FROM = '#e6b4ff';
+const FIG_TO = '#ffb2d0';
 
-// Supine breathing + knee sways: lying flat, bent knees swaying side to side.
-function BreathingSwaysFigure() {
-  const reducedMotion = useReducedMotion();
-  return (
-    <FigureSvg label="Breathing with knee sways">
-      {/* torso flat on the ground */}
-      <path d="M64 136 L128 136" />
-      <MorphHead positions={[[50, 134]]} duration={4} />
-      {/* bent legs swaying: knees apex left / centre / right */}
-      {reducedMotion ? (
-        <MorphPath poses={['M128 136 L146 96 L172 136', 'M128 136 L162 100 L184 136']} duration={4} />
-      ) : (
-        <MorphPath
-          poses={['M128 136 L138 98 L166 136', 'M128 136 L152 94 L176 136', 'M128 136 L166 98 L186 136']}
-          duration={4}
-        />
-      )}
-    </FigureSvg>
-  );
+// Limb stroke widths — real body volume: torso, arm, arm, leg, leg.
+const WIDTHS = [34, 18, 18, 25, 25];
+
+const fmt = (p: Point) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+
+// 2 points → a straight line; 3 points → a quadratic bowed toward the joint.
+function pathOf(pts: Point[]): string {
+  return pts.length === 2 ? `M ${fmt(pts[0])} L ${fmt(pts[1])}` : `M ${fmt(pts[0])} Q ${fmt(pts[1])} ${fmt(pts[2])}`;
 }
 
-// Glute bridge: supine, hips rise to a straight shoulder–knee line, lower.
-function GluteBridgeFigure() {
-  return (
-    <FigureSvg label="Glute bridge">
-      <MorphHead positions={[[52, 134], [52, 134]]} duration={3} />
-      {/* shoulders → hips → knees → feet */}
-      <MorphPath
-        poses={['M66 136 L118 136 L146 102 L158 138', 'M66 136 L118 104 L146 96 L158 138']}
-        duration={3}
-      />
-      {/* arm resting along the floor */}
-      <path d="M70 138 L104 138" strokeWidth={5} opacity={0.6} />
-    </FigureSvg>
-  );
+// Each limb as an ordered point list (joint in the middle for the 3-point ones).
+function limbs(fr: Frame): Point[][] {
+  return [
+    [fr.P, fr.N], // torso
+    [fr.hA, fr.eA, fr.N], // arm A
+    [fr.hB, fr.eB, fr.N], // arm B
+    [fr.fA, fr.kA, fr.P], // leg A
+    [fr.fB, fr.kB, fr.P], // leg B
+  ];
 }
 
-/* ── Fallback: calm standing figure with a breath pulse ──────────────── */
-
-function DefaultFigure({ label }: { label: string }) {
-  const reducedMotion = useReducedMotion();
-  return (
-    <FigureSvg label={label}>
-      <motion.g
-        animate={reducedMotion ? undefined : { scale: [1, 1.02, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ transformOrigin: '120px 140px' }}
-      >
-        <circle cx={120} cy={44} r={9} fill="currentColor" stroke="none" />
-        <path d="M120 55 L120 100" />
-        <path d="M120 66 L98 92" />
-        <path d="M120 66 L142 92" />
-        <path d="M120 100 L104 140" />
-        <path d="M120 100 L136 140" />
-      </motion.g>
-    </FigureSvg>
-  );
-}
-
-/* ── Registry ────────────────────────────────────────────────────────── */
-
-const registry: Record<string, ComponentType> = {
-  'breathing-sways': BreathingSwaysFigure,
-  'glute-bridge': GluteBridgeFigure,
-  'sl-glute-bridge': SlGluteBridgeFigure,
-  'dead-bug': DeadBugFigure,
-  'cat-camel': CatCamelFigure,
-  'bird-dog': BirdDogFigure,
-  'side-plank': SidePlankFigure,
-  wgs: WgsFigure,
-  'ankle-rocks': AnkleRocksFigure,
-  'adductor-rocks': AdductorRocksFigure,
-  'leg-swings': LegSwingsFigure,
-  'wall-slides': WallSlidesFigure,
-  'scap-work': ScapWorkFigure,
-  'hip-abduction': HipAbductionFigure,
-  'calf-raises': CalfRaisesFigure,
-  'march-knees': MarchKneesFigure,
-  'bw-squats': BwSquatsFigure,
-  'squats-lunges': SquatsLungesFigure,
-  'lateral-lunges': LateralLungesFigure,
-  'plyo-intervals': PlyoIntervalsFigure,
-  finisher: FinisherFigure,
-  'reset-breathing': ResetBreathingFigure,
-  'hip-cars': HipCarsFigure,
-  '90-90': NinetyNinetyFigure,
-  'figure-4': FigureFourFigure,
-  butterfly: ButterflyFigure,
-  'hip-flexor': HipFlexorFigure,
-  'nerve-glides': NerveGlidesFigure,
-  'hamstring-strap': HamstringStrapFigure,
-  'wall-hamstring': WallHamstringFigure,
-  'calf-stretch': CalfStretchFigure,
-  'toe-touch': ToeTouchFigure,
-};
+const SPLINE = {
+  dur: '2.7s',
+  repeatCount: 'indefinite',
+  calcMode: 'spline',
+  keyTimes: '0;0.5;1',
+  keySplines: '0.42 0 0.58 1;0.42 0 0.58 1',
+} as const;
 
 export function ExerciseFigure({ name, label }: { name: string; label?: string }) {
-  const Figure = registry[name];
+  const reducedMotion = useReducedMotion();
+  const { a, b } = poseFor(name);
+  const A = forwardKinematics(a);
+  const B = forwardKinematics(b);
+  const LA = limbs(A);
+  const LB = limbs(B);
+
+  // Unique gradient/filter ids per figure so multiple never collide.
+  const uid = `fh-${name.replace(/[^a-z0-9]/gi, '')}`;
+
+  const limbPath = (i: number, width: number, opacity: number) => {
+    const aD = pathOf(LA[i]);
+    return (
+      <path
+        key={i}
+        d={aD}
+        fill="none"
+        stroke={`url(#${uid}-grad)`}
+        strokeWidth={width}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={opacity}
+      >
+        {!reducedMotion && (
+          <animate attributeName="d" values={`${aD};${pathOf(LB[i])};${aD}`} {...SPLINE} />
+        )}
+      </path>
+    );
+  };
+
+  const headAnim = (attr: 'cx' | 'cy', av: number, bv: number) =>
+    reducedMotion ? null : (
+      <animate
+        key={attr}
+        attributeName={attr}
+        values={`${av.toFixed(1)};${bv.toFixed(1)};${av.toFixed(1)}`}
+        {...SPLINE}
+      />
+    );
+
+  const headKids = [headAnim('cx', A.Hc[0], B.Hc[0]), headAnim('cy', A.Hc[1], B.Hc[1])];
+
   return (
-    <div
-      className="accent-fade mx-auto w-full max-w-[340px]"
-      style={{ color: 'var(--accent)' }}
+    <svg
+      viewBox="12 12 176 190"
+      role="img"
+      aria-label={`${label ?? name} demonstration`}
+      style={{ width: '100%', height: '100%', overflow: 'visible', display: 'block' }}
     >
-      {Figure ? <Figure /> : <DefaultFigure label={label ?? name} />}
-    </div>
+      <defs>
+        <linearGradient id={`${uid}-grad`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={FIG_FROM} />
+          <stop offset="100%" stopColor={FIG_TO} />
+        </linearGradient>
+        <filter id={`${uid}-soft`} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation={4.5} />
+        </filter>
+      </defs>
+
+      {/* grounding shadow */}
+      <ellipse cx={100} cy={193} rx={34} ry={5} fill={FIG_FROM} opacity={0.16} filter={`url(#${uid}-soft)`} />
+
+      <g style={{ filter: 'drop-shadow(0 0 10px rgba(255,178,208,.34))' }}>
+        {/* blurred underlay for volume */}
+        <g filter={`url(#${uid}-soft)`} opacity={0.5}>
+          {[0, 1, 2, 3, 4].map((i) => limbPath(i, WIDTHS[i] + 8, 0.8))}
+        </g>
+        {/* solid core */}
+        <g>{[0, 1, 2, 3, 4].map((i) => limbPath(i, WIDTHS[i], 0.96))}</g>
+        {/* head glow + core */}
+        <circle cx={A.Hc[0]} cy={A.Hc[1]} r={20} fill={`url(#${uid}-grad)`} opacity={0.4} filter={`url(#${uid}-soft)`}>
+          {headKids}
+        </circle>
+        <circle cx={A.Hc[0]} cy={A.Hc[1]} r={15.5} fill={`url(#${uid}-grad)`}>
+          {headKids}
+        </circle>
+      </g>
+    </svg>
   );
 }
