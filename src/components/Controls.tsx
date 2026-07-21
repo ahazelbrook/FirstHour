@@ -30,9 +30,22 @@ function ControlButton({
       onClick={onClick}
       whileTap={reducedMotion ? undefined : { scale: 0.88 }}
       transition={{ type: 'spring', stiffness: 500, damping: 24 }}
-      className={`flex items-center justify-center rounded-full border-none bg-night-1 text-cream ${
-        large ? 'h-16 w-16' : 'h-12 w-12'
+      className={`accent-fade flex items-center justify-center rounded-full ${
+        large
+          ? 'h-[70px] w-[70px] border-[1.5px] text-[color:var(--accent)]'
+          : 'glass h-12 w-12 text-cream'
       }`}
+      style={
+        large
+          ? {
+              borderColor: 'var(--accent)',
+              background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 0 30px var(--accent-glow)',
+            }
+          : undefined
+      }
     >
       {children}
     </motion.button>

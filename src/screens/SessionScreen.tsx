@@ -3,7 +3,8 @@ import type { Routine } from '../types';
 import type { VoiceCoach } from '../lib/voice/VoiceCoach';
 import { useSession } from '../lib/session/useSession';
 import { useWakeLock } from '../lib/useWakeLock';
-import { accentForBlock } from '../theme';
+import { useMeshPalette } from '../lib/useMeshPalette';
+import { meshForBlock } from '../theme';
 import { CountdownRing } from '../components/CountdownRing';
 import { SessionProgress } from '../components/SessionProgress';
 import { Controls } from '../components/Controls';
@@ -67,11 +68,11 @@ export function SessionScreen({ routine, coach, voiceOff = false, onComplete, on
 
   const paused = s.status === 'paused';
 
+  // The gradient mesh follows the block (pre-dawn → morning) and calms when paused.
+  useMeshPalette(meshForBlock(s.blockIndex), paused ? 'paused' : 'session');
+
   return (
-    <div
-      className="accent-scope flex min-h-dvh flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
-      style={{ '--accent': accentForBlock(s.blockIndex) } as React.CSSProperties}
-    >
+    <div className="accent-scope flex min-h-dvh flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
       <SunriseSweep />
 
       <SessionProgress
