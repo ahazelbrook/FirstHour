@@ -2,17 +2,65 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { routines } from '../data/routines';
 import type { Routine } from '../types';
 import { getStreak, hasCompletedToday } from '../lib/storage';
+import type { VoicePref } from '../lib/voice/useVoice';
 
 interface Props {
   onStart: (routine: Routine) => void;
   onInfo: () => void;
+  voicePref: VoicePref;
+  onChangeVoicePref: (pref: VoicePref) => void;
+  recordedAvailable: boolean;
 }
 
 function todayLine(): string {
   return new Intl.DateTimeFormat('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 }
 
-export function HomeScreen({ onStart, onInfo }: Props) {
+const VOICE_OPTIONS: { value: VoicePref; label: string }[] = [
+  { value: 'recorded', label: 'Recorded' },
+  { value: 'device', label: 'Device' },
+  { value: 'off', label: 'Off' },
+];
+
+function VoiceToggle({
+  pref,
+  onChange,
+  recordedAvailable,
+}: {
+  pref: VoicePref;
+  onChange: (p: VoicePref) => void;
+  recordedAvailable: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="quiet-label">Voice</span>
+      <div className="flex overflow-hidden rounded-full border border-night-2 bg-night-1">
+        {VOICE_OPTIONS.map((opt) => {
+          const active = pref === opt.value;
+          const disabled = opt.value === 'recorded' && !recordedAvailable;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              disabled={disabled}
+              aria-pressed={active}
+              onClick={() => onChange(opt.value)}
+              className="accent-fade px-4 py-1.5 font-body text-xs font-medium disabled:opacity-35"
+              style={{
+                color: active ? 'var(--color-night-0)' : 'var(--color-mist)',
+                backgroundColor: active ? 'var(--accent)' : 'transparent',
+              }}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function HomeScreen({ onStart, onInfo, voicePref, onChangeVoicePref, recordedAvailable }: Props) {
   const reducedMotion = useReducedMotion();
   const streak = getStreak();
   const doneToday = hasCompletedToday();
@@ -70,7 +118,8 @@ export function HomeScreen({ onStart, onInfo }: Props) {
         ))}
       </main>
 
-      <footer className="mt-8 flex justify-center">
+      <footer className="mt-8 flex flex-col items-center gap-6">
+        <VoiceToggle pref={voicePref} onChange={onChangeVoicePref} recordedAvailable={recordedAvailable} />
         <button
           type="button"
           onClick={onInfo}

@@ -69,16 +69,17 @@ export function buildTimeline(routine: Routine): TimelineEvent[] {
     const duration = seg.endSec - seg.startSec;
     const i = seg.segmentIndex;
 
+    const rid = routine.id;
     const startVoice: VoiceLineRequest[] = [];
     if (i === 0) {
-      startVoice.push({ segmentId: routine.id, event: 'sessionStart', text: routine.voiceSessionStart });
+      startVoice.push({ routineId: rid, segmentId: routine.id, event: 'sessionStart', text: routine.voiceSessionStart });
     } else {
       const blockIndex = firstSegmentOfBlock.get(i);
       if (blockIndex !== undefined) {
         const block = routine.blocks[blockIndex];
-        startVoice.push({ segmentId: block.id, event: 'blockIntro', text: block.voiceIntro });
+        startVoice.push({ routineId: rid, segmentId: block.id, event: 'blockIntro', text: block.voiceIntro });
       }
-      startVoice.push({ segmentId: seg.id, event: 'start', text: seg.voice.start });
+      startVoice.push({ routineId: rid, segmentId: seg.id, event: 'start', text: seg.voice.start });
     }
     events.push({ atSec: seg.startSec, kind: 'segment-start', segmentIndex: i, voice: startVoice });
 
@@ -86,7 +87,7 @@ export function buildTimeline(routine: Routine): TimelineEvent[] {
       atSec: seg.startSec + Math.round(duration * 0.4),
       kind: 'mid-cue',
       segmentIndex: i,
-      voice: [{ segmentId: seg.id, event: 'mid', text: seg.voice.mid }],
+      voice: [{ routineId: rid, segmentId: seg.id, event: 'mid', text: seg.voice.mid }],
     });
 
     if (seg.perSide && seg.voice.switchSides) {
@@ -94,7 +95,7 @@ export function buildTimeline(routine: Routine): TimelineEvent[] {
         atSec: seg.startSec + Math.round(duration / 2),
         kind: 'switch-sides',
         segmentIndex: i,
-        voice: [{ segmentId: seg.id, event: 'switchSides', text: seg.voice.switchSides }],
+        voice: [{ routineId: rid, segmentId: seg.id, event: 'switchSides', text: seg.voice.switchSides }],
       });
     }
 
@@ -102,7 +103,7 @@ export function buildTimeline(routine: Routine): TimelineEvent[] {
       atSec: seg.endSec - 5,
       kind: 't-minus-5',
       segmentIndex: i,
-      voice: [{ segmentId: seg.id, event: 'tMinus5', text: seg.voice.tMinus5 }],
+      voice: [{ routineId: rid, segmentId: seg.id, event: 'tMinus5', text: seg.voice.tMinus5 }],
     });
 
     for (const offset of [3, 2, 1]) {
@@ -114,7 +115,7 @@ export function buildTimeline(routine: Routine): TimelineEvent[] {
     atSec: routine.totalSec,
     kind: 'session-end',
     segmentIndex: flat.length - 1,
-    voice: [{ segmentId: routine.id, event: 'sessionEnd', text: routine.voiceSessionEnd }],
+    voice: [{ routineId: routine.id, segmentId: routine.id, event: 'sessionEnd', text: routine.voiceSessionEnd }],
   });
 
   events.sort((a, b) => a.atSec - b.atSec || a.segmentIndex - b.segmentIndex);

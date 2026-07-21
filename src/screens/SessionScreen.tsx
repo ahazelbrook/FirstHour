@@ -13,12 +13,13 @@ import { ExerciseFigure } from '../components/figures/ExerciseFigure';
 interface Props {
   routine: Routine;
   coach: VoiceCoach;
+  voiceOff?: boolean;
   onComplete: () => void;
   onExit: () => void;
 }
 
-export function SessionScreen({ routine, coach, onComplete, onExit }: Props) {
-  const s = useSession(routine, coach);
+export function SessionScreen({ routine, coach, voiceOff = false, onComplete, onExit }: Props) {
+  const s = useSession(routine, coach, voiceOff);
   const startedRef = useRef(false);
 
   // Auto-start on mount (the tap that navigated here is the user gesture).

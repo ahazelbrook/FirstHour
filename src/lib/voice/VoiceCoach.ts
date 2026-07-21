@@ -70,6 +70,14 @@ export class VoiceCoach {
     this.engine.duck();
   }
 
+  preload(requests: VoiceLineRequest[]): void {
+    this.engine.preload?.(requests);
+  }
+
+  prime(): void {
+    this.engine.prime?.();
+  }
+
   setMuted(muted: boolean): void {
     if (muted) this.flush();
     this.engine.setMuted(muted);

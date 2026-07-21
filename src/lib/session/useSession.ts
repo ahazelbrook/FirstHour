@@ -11,13 +11,13 @@ const TICK_MS = 100;
  *  events and re-orient instead of firing a burst of queued speech. */
 const CATCH_UP_THRESHOLD_SEC = 3;
 
-export function useSession(routine: Routine, coach: VoiceCoach) {
+export function useSession(routine: Routine, coach: VoiceCoach, initialMuted = false) {
   const flat = useMemo(() => flattenSegments(routine), [routine]);
   const timeline = useMemo(() => buildTimeline(routine), [routine]);
 
   const [status, setStatus] = useState<SessionStatus>('idle');
   const [elapsed, setElapsed] = useState(0);
-  const [muted, setMutedState] = useState(false);
+  const [muted, setMutedState] = useState(initialMuted);
 
   const statusRef = useRef(status);
   statusRef.current = status;
@@ -72,7 +72,7 @@ export function useSession(routine: Routine, coach: VoiceCoach) {
         const seg = flat[segIndex];
         if (now < routine.totalSec && seg) {
           playChime();
-          coach.say([{ segmentId: seg.id, event: 'start', text: seg.voice.start }]);
+          coach.say([{ routineId: routine.id, segmentId: seg.id, event: 'start', text: seg.voice.start }]);
         }
         return;
       }
@@ -84,7 +84,7 @@ export function useSession(routine: Routine, coach: VoiceCoach) {
       eventIndexRef.current = i;
       lastElapsedRef.current = now;
     },
-    [timeline, flat, routine.totalSec, coach, fireEvent],
+    [timeline, flat, routine.totalSec, routine.id, coach, fireEvent],
   );
 
   const complete = useCallback(() => {
@@ -109,6 +109,7 @@ export function useSession(routine: Routine, coach: VoiceCoach) {
 
   const start = useCallback(() => {
     primeAudio();
+    coach.prime();
     completedRef.current = false;
     accumRef.current = 0;
     startedAtRef.current = performance.now();
@@ -116,7 +117,7 @@ export function useSession(routine: Routine, coach: VoiceCoach) {
     lastElapsedRef.current = -0.001;
     setElapsed(0);
     setStatus('running');
-  }, []);
+  }, [coach]);
 
   const togglePause = useCallback(() => {
     if (statusRef.current === 'running') {
@@ -158,6 +159,14 @@ export function useSession(routine: Routine, coach: VoiceCoach) {
   const segmentIndex = segmentIndexAt(flat, elapsed);
   const segment = flat[segmentIndex];
   const nextSegment = flat[segmentIndex + 1] ?? null;
+
+  // Warm the next segment's clips (fetch + decode) during the current one.
+  useEffect(() => {
+    const upcoming = timeline
+      .filter((e) => e.segmentIndex === segmentIndex + 1)
+      .flatMap((e) => e.voice);
+    if (upcoming.length) coach.preload(upcoming);
+  }, [segmentIndex, timeline, coach]);
 
   const skipNext = useCallback(() => skipTo(segmentIndexAt(flat, currentElapsed()) + 1), [skipTo, flat, currentElapsed]);
   const skipPrev = useCallback(() => skipTo(segmentIndexAt(flat, currentElapsed()) - 1), [skipTo, flat, currentElapsed]);

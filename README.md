@@ -61,39 +61,70 @@ single inline SVG (rising-sun mark on the app's night-0 background) to `public/f
 and the three PWA PNGs via `sharp`. Re-run it if the mark ever changes; nothing else
 depends on hand-edited icon files.
 
-## Dropping in pre-recorded voice audio later
+## Voice: recorded vs device
 
-Voice coaching runs through a `VoiceEngine` interface (`src/lib/voice/VoiceEngine.ts`).
-The app ships wired to `SpeechSynthesisEngine`, which uses the browser's built-in
-`speechSynthesis`. `src/lib/voice/AudioFileEngine.ts` is a drop-in replacement that plays
-pre-recorded `.mp3` files instead — e.g. ElevenLabs renders — with a graceful per-line
-fallback to speech synthesis for anything missing.
+Voice coaching runs through a `VoiceEngine` interface (`src/lib/voice/VoiceEngine.ts`) with
+two implementations:
 
-To switch, edit `src/App.tsx`:
+- **`SpeechSynthesisEngine`** — the browser's built-in `speechSynthesis` (no assets needed).
+- **`AudioFileEngine`** — plays pre-generated `.mp3` clips through the Web Audio API, with
+  next-segment preloading and a per-line fallback to speech synthesis for anything missing.
 
-```ts
-const coach = useMemo(() => new VoiceCoach(new AudioFileEngine()), []);
+The Home screen has a **Voice** toggle — *Recorded / Device / Off*. "Recorded" is offered
+(and becomes the default) only when a complete recorded set is present; otherwise the app
+uses the device voice. Completeness is decided by comparing `public/audio/manifest.json`
+against every line the app can request.
+
+### Generating the recorded voice with Gemini TTS
+
+```
+npm run voice                 # generate every missing clip (resumable)
+npm run voice -- --force      # regenerate everything
+npm run voice -- --only wgs   # regenerate only files whose name matches "wgs"
+npm run voice -- --dry-run    # list what would be generated, no API calls
 ```
 
-### File convention
+Requires a Gemini API key in `.env` (never commit it — it is gitignored):
 
-Files go in `public/audio/`, named `{segmentId}-{event}.mp3`. `segmentId` and `event` are
-whatever was requested for that line; the possible `event` values and what keys them are:
+```
+GEMINI_API_KEY=your-key-here
+# optional overrides:
+GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts   # default
+GEMINI_VOICE=Charon                             # default (deep, calm, male)
+GEMINI_TTS_RPM=8                                 # request throttle
+```
 
-| event          | keyed by                                | example                      |
-|----------------|------------------------------------------|-------------------------------|
-| `start`        | segment id                                | `glute-bridge-start.mp3`      |
-| `mid`          | segment id                                | `glute-bridge-mid.mp3`        |
-| `tMinus5`      | segment id                                | `glute-bridge-tMinus5.mp3`    |
-| `switchSides`  | segment id (only on `perSide` segments)   | `dead-bug-switchSides.mp3`    |
-| `blockIntro`   | block id                                  | `raise-blockIntro.mp3`        |
-| `sessionStart` | routine id                                | `daily-10-sessionStart.mp3`   |
-| `sessionEnd`   | routine id                                | `extended-20-sessionEnd.mp3`  |
+The script imports the app's own data layer, walks the exact lines the session will speak,
+sends each through Gemini TTS (single-speaker, with a fixed coaching-style prompt), converts
+the returned 24 kHz PCM to mp3, normalises loudness to roughly −16 LUFS, trims and compresses
+silence, and writes `public/audio/…` plus a `manifest.json`. It is **resumable** (skips clips
+already on disk) and backs off on rate-limit (429) responses.
 
-Segment ids and block ids are defined per-exercise in `src/data/routines.ts`; routine ids
-are `daily-10` and `extended-20`.
+> Free-tier keys are limited to ~10 TTS requests **per day per model**, and the full set is
+> ~110 clips. To generate everything at once, enable billing on the key's Google Cloud
+> project (TTS is a few cents for this set); otherwise re-run `npm run voice` daily and it
+> will fill in the rest over several days.
 
-Any file that's missing at play time falls back to speech synthesis for that one line —
-you don't need a complete set to start using recorded audio. `AudioFileEngine` remembers
-which files were missing for the rest of the session, so it doesn't re-probe the network
-for them.
+The generated `public/audio/` directory is gitignored (regenerable, and large). Commit it or
+generate it in your deploy step if you want recorded voice in a hosted build.
+
+### File layout
+
+One directory per routine, so the same segment id can hold different lines in each routine:
+
+```
+public/audio/{routineId}/{segmentId}-start.mp3
+public/audio/{routineId}/{segmentId}-mid.mp3
+public/audio/{routineId}/{segmentId}-tminus5.mp3
+public/audio/{routineId}/{segmentId}-switch.mp3   # only custom side-switch lines
+public/audio/{routineId}/switch.mp3               # shared "Switch sides."
+public/audio/{routineId}/block-{n}.mp3            # block transition (n = 2..4)
+public/audio/{routineId}/session-intro.mp3
+public/audio/{routineId}/session-outro.mp3
+```
+
+`routineId` is `daily-10` or `extended-20`; segment and block ids live in
+`src/data/routines.ts`. Filenames are produced by the shared `audioRelPath()` helper
+(`src/lib/voice/audioKey.ts`), which both the engine and the generation script call, so they
+can never disagree. To use a different TTS provider (e.g. ElevenLabs), render clips to these
+same paths — no code change needed.

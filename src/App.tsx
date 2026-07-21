@@ -1,15 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { Routine } from './types';
-import { SpeechSynthesisEngine } from './lib/voice/SpeechSynthesisEngine';
-import { VoiceCoach } from './lib/voice/VoiceCoach';
 import { recordCompletion } from './lib/storage';
+import { useVoice, useVoiceAvailability } from './lib/voice/useVoice';
 import { HomeScreen } from './screens/HomeScreen';
 import { SessionScreen } from './screens/SessionScreen';
 import { CompletionScreen } from './screens/CompletionScreen';
 import { InfoScreen } from './screens/InfoScreen';
 
-// To use pre-recorded lines instead of speechSynthesis, swap in AudioFileEngine
-// (see README — files go in public/audio/{segmentId}-{event}.mp3).
 type View =
   | { name: 'home' }
   | { name: 'info' }
@@ -17,16 +14,14 @@ type View =
   | { name: 'complete'; routine: Routine; streak: number };
 
 export default function App() {
-  const coach = useMemo(() => new VoiceCoach(new SpeechSynthesisEngine()), []);
+  const { recordedAvailable } = useVoiceAvailability();
+  const { coach, pref, changePref } = useVoice(recordedAvailable);
   const [view, setView] = useState<View>({ name: 'home' });
 
-  const handleComplete = useCallback(
-    (routine: Routine) => {
-      const streak = recordCompletion();
-      setView({ name: 'complete', routine, streak });
-    },
-    [],
-  );
+  const handleComplete = useCallback((routine: Routine) => {
+    const streak = recordCompletion();
+    setView({ name: 'complete', routine, streak });
+  }, []);
 
   switch (view.name) {
     case 'home':
@@ -34,6 +29,9 @@ export default function App() {
         <HomeScreen
           onStart={(routine) => setView({ name: 'session', routine })}
           onInfo={() => setView({ name: 'info' })}
+          voicePref={pref}
+          onChangeVoicePref={changePref}
+          recordedAvailable={recordedAvailable}
         />
       );
     case 'info':
@@ -43,6 +41,7 @@ export default function App() {
         <SessionScreen
           routine={view.routine}
           coach={coach}
+          voiceOff={pref === 'off'}
           onComplete={() => handleComplete(view.routine)}
           onExit={() => setView({ name: 'home' })}
         />

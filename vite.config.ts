@@ -28,15 +28,15 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Full precache — including fonts — so the app runs fully offline
-        // after the first load.
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Full precache — fonts AND the generated voice clips + manifest — so
+        // the app (and recorded voice) run fully offline after the first load.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mp3,json}'],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         runtimeCaching: [
           {
-            // Optional pre-recorded voice lines (public/audio/*.mp3, see
-            // README) aren't present at build time, so they can't be
-            // precached. Cache them on first play instead.
-            urlPattern: ({ url }) => url.pathname.startsWith('/audio/') && url.pathname.endsWith('.mp3'),
+            // Fallback for any voice clip not in the precache (e.g. audio added
+            // after this build): cache it on first play.
+            urlPattern: ({ url }) => url.pathname.includes('/audio/') && url.pathname.endsWith('.mp3'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'voice-audio',

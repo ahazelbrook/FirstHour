@@ -3,7 +3,9 @@
  * be re-keyed to pre-generated TTS files without touching component code.
  */
 export interface VoiceLineRequest {
-  /** Segment id the line belongs to, e.g. "glute-bridge". Used as the audio-file key. */
+  /** Routine the line belongs to. Namespaces the audio file so the same segment id can differ per routine. */
+  routineId: string;
+  /** Segment id the line belongs to, e.g. "glute-bridge". For block/session events this is the block/routine id. */
   segmentId: string;
   /** Which event within the segment this line is for. Used as the audio-file key. */
   event: 'start' | 'mid' | 'tMinus5' | 'switchSides' | 'blockIntro' | 'sessionStart' | 'sessionEnd';
@@ -26,4 +28,8 @@ export interface VoiceEngine {
   isSpeaking(): boolean;
   /** Mute/unmute. Muting stops any current speech. */
   setMuted(muted: boolean): void;
+  /** Optionally warm caches for upcoming lines (e.g. fetch+decode next segment's clips). */
+  preload?(requests: VoiceLineRequest[]): void;
+  /** Optionally resume the audio context from a user gesture. */
+  prime?(): void;
 }
