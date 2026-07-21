@@ -1,0 +1,4 @@
+# Cloudflare Pages reads this file from the site root.
+# Ask search engines not to index the site so it stays "hidden".
+/*
+  X-Robots-Tag: noindex, nofollow
