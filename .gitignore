@@ -8,3 +8,9 @@ dev-dist
 
 # Generated voice audio (run `npm run voice`)
 public/audio/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
