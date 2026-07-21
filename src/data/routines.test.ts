@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allSegments, dailyTen, extendedTwenty } from './routines';
+import { allSegments, dailyTen, extendedTwenty, routineA, routineB } from './routines';
 import type { Routine } from '../types';
 
 function checkRoutine(routine: Routine, expectedTotal: number) {
@@ -45,3 +45,5 @@ function checkRoutine(routine: Routine, expectedTotal: number) {
 
 checkRoutine(dailyTen, 600);
 checkRoutine(extendedTwenty, 1200);
+checkRoutine(routineA, 600);
+checkRoutine(routineB, 600);

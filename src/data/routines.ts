@@ -543,7 +543,235 @@ export const extendedTwenty: Routine = {
   ],
 };
 
-export const routines: Routine[] = [dailyTen, extendedTwenty];
+const STRETCH_END_VOICE = "Done. Longer, looser, and a little taller than you started.";
+
+export const routineA: Routine = {
+  id: 'routine-a',
+  title: 'Routine A',
+  subtitle: 'Hips & flexors. Open the rotation for cross-legged sitting.',
+  totalSec: 600,
+  voiceSessionStart:
+    'Routine A — hips. Ten minutes. Ease into each stretch and breathe. Let the range come to you; never force it.',
+  voiceSessionEnd: STRETCH_END_VOICE,
+  blocks: [
+    {
+      id: 'prime',
+      name: 'Prime',
+      voiceIntro: 'Block one. Wake the hip up. Full control, no stretching yet.',
+      segments: [
+        {
+          id: 'hip-cars',
+          name: 'Hip CARs',
+          startSec: 0,
+          endSec: 120,
+          prescription: '3 slow circles each way, per leg',
+          cue: 'Move like you are pushing through thick mud.',
+          perSide: true,
+          voice: {
+            start: 'Hip circles — CARs. Three slow circles each direction, each leg. Maximum control.',
+            mid: 'Move like you are pushing through thick mud.',
+            tMinus5: 'Five seconds — next up, the ninety-ninety.',
+            switchSides: 'Switch legs.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'rotate',
+      name: 'Rotate',
+      voiceIntro: 'Block two. Deep hip rotation. Sit tall.',
+      segments: [
+        {
+          id: '90-90',
+          name: '90/90 with contract–relax',
+          startSec: 120,
+          endSec: 270,
+          prescription: 'hold, contract, sink — 75s/side',
+          cue: 'Chest lifted. Both sit bones heavy.',
+          perSide: true,
+          voice: {
+            start: 'Ninety-ninety hip stretch. Sit tall and hold, then press the front shin down for five and sink deeper.',
+            mid: 'Chest lifted. Both sit bones heavy.',
+            tMinus5: 'Five seconds — next up, the figure-four.',
+            switchSides: 'Switch sides.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'release',
+      name: 'Release',
+      voiceIntro: 'Block three. Let the deep rotators go.',
+      segments: [
+        {
+          id: 'figure-4',
+          name: 'Supine figure-4',
+          startSec: 270,
+          endSec: 390,
+          prescription: '60s/side',
+          cue: 'Flex the crossed foot. Tailbone stays down.',
+          perSide: true,
+          voice: {
+            start: 'Supine figure-four. Cross the ankle over the knee and draw the thigh toward your chest. Sixty seconds a side.',
+            mid: 'Flex the crossed foot. Tailbone stays on the floor.',
+            tMinus5: 'Five seconds — next up, the butterfly.',
+            switchSides: 'Switch sides.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'open',
+      name: 'Open',
+      voiceIntro: 'Block four. Adductors, then the hip flexors.',
+      segments: [
+        {
+          id: 'butterfly',
+          name: 'Butterfly with contract–relax',
+          startSec: 390,
+          endSec: 480,
+          prescription: 'hold, squeeze, release ×2',
+          cue: 'Feel the inner thighs, not the knees.',
+          voice: {
+            start: 'Butterfly. Soles together, knees wide. Hold, squeeze the knees up for five, then let them fall open.',
+            mid: 'Feel the inner thighs, not the knees.',
+            tMinus5: 'Five seconds — next up, the hip flexor stretch.',
+          },
+        },
+        {
+          id: 'hip-flexor',
+          name: 'Half-kneeling hip flexor',
+          startSec: 480,
+          endSec: 600,
+          prescription: '60s/side',
+          cue: 'Squeeze the glute. Tuck the tailbone.',
+          perSide: true,
+          voice: {
+            start: 'Half-kneeling hip flexor stretch. Squeeze the back glute hard, tuck the tailbone, shift gently forward.',
+            mid: 'Squeeze the glute. Feel it in the front of the hip, never the low back.',
+            tMinus5: 'Five seconds. Nearly done.',
+            switchSides: 'Switch sides.',
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export const routineB: Routine = {
+  id: 'routine-b',
+  title: 'Routine B',
+  subtitle: 'Hamstrings & posterior chain. The path to the toe touch.',
+  totalSec: 600,
+  voiceSessionStart:
+    'Routine B — hamstrings. Ten minutes, fully supported and back-safe. Relax into each hold; don’t grind.',
+  voiceSessionEnd: STRETCH_END_VOICE,
+  blocks: [
+    {
+      id: 'free-nerve',
+      name: 'Free the nerve',
+      voiceIntro: 'Block one. Floss the nerve before you stretch anything.',
+      segments: [
+        {
+          id: 'nerve-glides',
+          name: 'Sciatic nerve glides',
+          startSec: 0,
+          endSec: 90,
+          prescription: '12 smooth reps/leg',
+          cue: 'A gentle glide, never a hard stretch.',
+          perSide: true,
+          voice: {
+            start: 'Sciatic nerve glides. Straighten the knee and point the toe, then bend and flex. Smooth, like a piston.',
+            mid: 'A gentle glide, three out of ten. Never hold the end.',
+            tMinus5: 'Five seconds — next up, the strap hamstring stretch.',
+            switchSides: 'Switch legs.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'lengthen-strap',
+      name: 'Lengthen (strap)',
+      voiceIntro: 'Block two. On your back, strap around the foot.',
+      segments: [
+        {
+          id: 'hamstring-strap',
+          name: 'Supine hamstring + PNF',
+          startSec: 90,
+          endSec: 330,
+          prescription: 'hold, push, sink — 120s/leg',
+          cue: 'Tailbone flat. Feel it mid-thigh.',
+          perSide: true,
+          voice: {
+            start: 'Supine hamstring stretch with a strap. Hold, push the heel into the strap for six, then draw the leg deeper.',
+            mid: 'Tailbone flat on the floor. Feel it in the belly of the hamstring.',
+            tMinus5: 'Five seconds — next up, the wall hamstring stretch.',
+            switchSides: 'Switch legs.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'lengthen-wall',
+      name: 'Lengthen (wall)',
+      voiceIntro: 'Block three. Legs up, fully supported.',
+      segments: [
+        {
+          id: 'wall-hamstring',
+          name: 'Wall hamstring stretch',
+          startSec: 330,
+          endSec: 480,
+          prescription: '75s/leg',
+          cue: 'Hips square. Relax on every exhale.',
+          perSide: true,
+          voice: {
+            start: 'Wall hamstring stretch. One leg straight up the wall, scoot your hips in until you feel it. Seventy-five seconds a leg.',
+            mid: 'Hips square. Relax the hamstring on every exhale.',
+            tMinus5: 'Five seconds — next up, the calf stretch.',
+            switchSides: 'Switch legs.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'chain',
+      name: 'Chain + pattern',
+      voiceIntro: 'Block four. Calves, then groove the fold.',
+      segments: [
+        {
+          id: 'calf-stretch',
+          name: 'Standing calf stretch',
+          startSec: 480,
+          endSec: 570,
+          prescription: '45s/leg',
+          cue: 'Back knee locked. Heel driven down.',
+          perSide: true,
+          voice: {
+            start: 'Standing calf stretch. Back leg straight, heel down, lean into the wall. Forty-five seconds a leg.',
+            mid: 'Back knee locked straight. Heel pressed into the floor.',
+            tMinus5: 'Five seconds — next up, the toe-touch drill.',
+            switchSides: 'Switch legs.',
+          },
+        },
+        {
+          id: 'toe-touch',
+          name: 'Toe-touch progression',
+          startSec: 570,
+          endSec: 600,
+          prescription: '×5, squeeze the ball',
+          cue: 'Push the hips back. Keep squeezing.',
+          voice: {
+            start: 'Toe-touch progression. Squeeze a ball or towel between your knees and fold. Five reps.',
+            mid: 'Push the hips back, like closing a door with your hips.',
+            tMinus5: 'Five seconds. Nearly done.',
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export const routines: Routine[] = [dailyTen, extendedTwenty, routineA, routineB];
 
 export function getRoutine(id: Routine['id']): Routine {
   const routine = routines.find((r) => r.id === id);

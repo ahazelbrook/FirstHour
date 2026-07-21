@@ -25,6 +25,18 @@ import {
   FinisherFigure,
   ResetBreathingFigure,
 } from './standing';
+import {
+  HipCarsFigure,
+  NinetyNinetyFigure,
+  FigureFourFigure,
+  ButterflyFigure,
+  HipFlexorFigure,
+  NerveGlidesFigure,
+  HamstringStrapFigure,
+  WallHamstringFigure,
+  CalfStretchFigure,
+  ToeTouchFigure,
+} from './stretch';
 
 /**
  * Looping demonstration figure for an exercise id. Add figures to the
@@ -117,6 +129,16 @@ const registry: Record<string, ComponentType> = {
   'plyo-intervals': PlyoIntervalsFigure,
   finisher: FinisherFigure,
   'reset-breathing': ResetBreathingFigure,
+  'hip-cars': HipCarsFigure,
+  '90-90': NinetyNinetyFigure,
+  'figure-4': FigureFourFigure,
+  butterfly: ButterflyFigure,
+  'hip-flexor': HipFlexorFigure,
+  'nerve-glides': NerveGlidesFigure,
+  'hamstring-strap': HamstringStrapFigure,
+  'wall-hamstring': WallHamstringFigure,
+  'calf-stretch': CalfStretchFigure,
+  'toe-touch': ToeTouchFigure,
 };
 
 export function ExerciseFigure({ name, label }: { name: string; label?: string }) {

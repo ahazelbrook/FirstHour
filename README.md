@@ -1,8 +1,9 @@
 # First Hour
 
-A guided morning-movement timer. Two routines — Daily 10 and Extended 20 — walk you
-through a fixed sequence of mobility and activation exercises with spoken cues, so you can
-move through the whole session without looking at the screen. Installable as an offline PWA.
+A guided morning-movement timer. Four routines — Daily 10 and Extended 20 (mobility and
+activation) plus Routine A and Routine B (a hip / hamstring stretching protocol) — walk you
+through a fixed sequence of exercises with spoken cues, so you can move through the whole
+session without looking at the screen. Installable as an offline PWA.
 
 ## Install & run
 
@@ -28,8 +29,8 @@ npm test
 ```
 
 Covers routine timing integrity (`src/data/routines.test.ts` — segments are contiguous,
-routines total exactly 600s / 1200s) and the session timeline (`src/lib/session/timeline.test.ts`
-— voice events line up with block/segment boundaries).
+routines total exactly 600s / 1200s / 600s / 600s) and the session timeline
+(`src/lib/session/timeline.test.ts` — voice events line up with block/segment boundaries).
 
 ## Installing it as an app on a phone
 
@@ -123,7 +124,7 @@ public/audio/{routineId}/session-intro.mp3
 public/audio/{routineId}/session-outro.mp3
 ```
 
-`routineId` is `daily-10` or `extended-20`; segment and block ids live in
+`routineId` is `daily-10`, `extended-20`, `routine-a`, or `routine-b`; segment and block ids live in
 `src/data/routines.ts`. Filenames are produced by the shared `audioRelPath()` helper
 (`src/lib/voice/audioKey.ts`), which both the engine and the generation script call, so they
 can never disagree. To use a different TTS provider (e.g. ElevenLabs), render clips to these

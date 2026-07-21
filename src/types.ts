@@ -30,7 +30,7 @@ export interface Block {
 }
 
 export interface Routine {
-  id: 'daily-10' | 'extended-20';
+  id: 'daily-10' | 'extended-20' | 'routine-a' | 'routine-b';
   title: string;
   subtitle: string;
   totalSec: number;
