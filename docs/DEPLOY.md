@@ -47,8 +47,12 @@ find it.
 
    | Box                    | What to type    |
    | ---------------------- | --------------- |
+   | Production branch      | `main`          |
    | Build command          | `npm run build` |
    | Build output directory | `dist`          |
+
+   (If there's a **Production branch** dropdown, choose **`main`**. That's the
+   copy of the project that has everything in it.)
 
 7. Leave everything else as-is and click **Save and Deploy**.
 8. Wait a minute or two. Cloudflare builds the site and shows a green success
